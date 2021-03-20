@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lmk.model.dao.SysUserDao">
+
+    <sql id="base_Sql">
+        user_id userId,
+        name name,
+        username username,
+        password password,
+        email email
+    </sql>
+    <select id="findAll" resultType="com.lmk.model.entity.SysUserEntity">
+        select
+        *
+        <!--<include refid="base_Sql"></include>-->
+        from sys_user
+    </select>
+
+    <insert id="add" parameterType="SysUserEntity">
+        insert into sys_user
+        <trim suffixOverrides="," prefix="(" suffix=")">
+            <if test="username!=null and username!='' ">
+                username ,
+            </if>
+            <if test="name!=null and name!='' ">
+                name ,
+            </if>
+            <if test="password!=null and password!='' ">
+                password ,
+            </if>
+            <if test="salt!=null and salt!='' ">
+                salt ,
+            </if>
+            <if test="email!=null and email!='' ">
+                email ,
+            </if>
+            <if test="mobile!=null and mobile!='' ">
+                mobile ,
+            </if>
+            <if test="status!=null and status!='' ">
+                status ,
+            </if>
+            <if test="type!=null and type!='' ">
+                type ,
+            </if>
+            <if test="createTime!=null ">
+                create_time ,
+            </if>
+            <if test="imgUrl!=null and imgUrl!=''">
+                img_url ,
+            </if>
+        </trim>
+        values
+        <trim suffixOverrides="," prefix="(" suffix=")">
+            <if test="username!=null and username!='' ">
+                #{username},
+            </if>
+            <if test="name!=null and name!='' ">
+                #{name},
+            </if>
+            <if test="password!=null and password!='' ">
+                #{password},
+            </if>
+            <if test="salt!=null and salt!='' ">
+                #{salt},
+            </if>
+            <if test="email!=null and email!='' ">
+                #{email},
+            </if>
+            <if test="mobile!=null and mobile!='' ">
+                #{mobile},
+            </if>
+            <if test="status!=null and status!='' ">
+                #{status},
+            </if>
+            <if test="type!=null and type!='' ">
+                #{type},
+            </if>
+            <if test="createTime!=null ">
+                #{createTime},
+            </if>
+            <if test="imgUrl!=null and imgUrl!=''">
+                #{imgUrl},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="int">
+        delete from sys_user where user_id=#{userId}
+    </delete>
+
+    <update id="update" parameterType="SysUserEntity">
+        update sys_user
+        <set>
+            <if test="username!=null and username!=''">
+                username=#{username},
+            </if>
+            <if test="name!=null and name!=''">
+                name=#{name},
+            </if>
+            <if test="email!=null and email!=''">
+                email=#{email},
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                mobile=#{mobile},
+            </if>
+        </set>
+        where user_id=#{userId}
+    </update>
+
+    <select id="getById" resultType="SysUserEntity">
+        select * from sys_user where user_id=#{id}
+    </select>
+
+    <select id="checkUserName" resultType="SysUserEntity">
+        select * from sys_user where username=#{username}
+    </select>
+
+    <select id="checkUserEmail" resultType="SysUserEntity">
+        select * from sys_user where email=#{email}
+    </select>
+</mapper>

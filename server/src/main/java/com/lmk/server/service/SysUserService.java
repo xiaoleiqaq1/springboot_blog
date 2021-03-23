@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public interface SysUserService extends IService<SysUserEntity> {
 
-    PageUtil findAll(Map<String,Object> map);
+    PageUtil findAll(Map<String, Object> map);
 //    List<SysUserEntity> findAll(Map<String,Object> map);
 
     int add(SysUserEntity sysUserEntity);
@@ -27,5 +27,7 @@ public interface SysUserService extends IService<SysUserEntity> {
     Boolean addRedisUserName(String username);
 
     Boolean addRedisUserEmail(String email);
+
+    void checkRedisUserName();
 
 }

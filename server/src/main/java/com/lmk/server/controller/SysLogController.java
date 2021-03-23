@@ -35,20 +35,19 @@ public class SysLogController {
 
     //查询所有
     @RequestMapping(value = "selectLog", method = RequestMethod.GET)
-    public Result selectLog(@RequestParam Map<String,Object> map) {
+    public Result selectLog(@RequestParam Map<String, Object> map) {
         Result result = new Result(StatusEnum.SUCCESS);
-        Map<String,Object> resultMap=new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         try {
             PageUtil page = sysLogService.selectLog(map);
-            resultMap.put("page",page);
+            resultMap.put("page", page);
             result.setData(resultMap);
         } catch (Exception e) {
-            logger.error("查询用户发生了异常",e);
+            logger.error("查询用户发生了异常", e);
             result = new Result(StatusEnum.FAIL);
         }
         return result;
     }
-
 
 
 }

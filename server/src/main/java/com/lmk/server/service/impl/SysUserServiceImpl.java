@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @auth: lmk
@@ -120,15 +117,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
     }
 
 
-    public void addRedisUserName2(String username){
+    public void addRedisUserName2(String username) {
         SetOperations setOperations = redisTemplate.opsForSet();
         //将数据添加进redis中
-        setOperations.add(RedisConstant.SET_USERNAME,username);
+        setOperations.add(RedisConstant.SET_USERNAME, username);
     }
 
-    public void addRedisUserEmail2(String email){
+    public void addRedisUserEmail2(String email) {
         SetOperations setOperations = redisTemplate.opsForSet();
-        setOperations.add(RedisConstant.SET_EMAIL,email);
+        setOperations.add(RedisConstant.SET_EMAIL, email);
     }
 
 
@@ -138,16 +135,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
      * @date 2021/3/20
      */
     @Override
-    public Boolean addRedisUserName(String username){
+    public Boolean addRedisUserName(String username) {
         SetOperations setOperations = redisTemplate.opsForSet();
         //redis自带的添加key，value方法
         //相当于包含
         Boolean member = setOperations.isMember(RedisConstant.SET_USERNAME, username);
         //member返回true,相当于redis缓存中已经存在了username
-        if (member==true){
+        if (member == true) {
             //直接返回false,直接从redis中获取
             return false;
-        }else{
+        } else {
             //member等于flase,相当于redis中没有数据，则需要从数据库中查找
             //必须用list集合去接收，如果存在相同的账号，则会有两个select语句，两条数据返回
             List<SysUserEntity> checkName = userDao.checkUserName(username);
@@ -159,10 +156,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 if (checkName.size() > 1) {
                     //数据库中已经存在了相同的账号
                     logger.error("数据库中已经存在了相同的账号");
-                }else {
+                } else {
                     //只有一条数据
                     //将数据添加进redis中
-                    setOperations.add(RedisConstant.SET_USERNAME,username);
+                    setOperations.add(RedisConstant.SET_USERNAME, username);
                 }
                 return false;
             }
@@ -237,7 +234,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         return userDao.getById(id);
     }
 
-//    @Override
+    //    @Override
     //第一种方式，没有缓存redis中的检查用户名
     public Boolean checkUserName(String username) {
         //必须用list集合去接收，如果存在相同的账号，则会有两个select语句，两条数据返回
@@ -253,5 +250,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
             }
             return false;
         }
+    }
+
+    @Override
+    public void checkRedisUserName() {
+        //第一步：清空redis中的账户数据
+        redisTemplate.delete(RedisConstant.SET_USERNAME);
+        //第二步：查询数据库，并放入redis中
+
+        Set<String> strings = new HashSet<>();
+
+        List<SysUserEntity> listUserName = userDao.findAll();
+        for (SysUserEntity username1 : listUserName) {
+            String username = username1.getUsername();
+            strings.add(username);
+        }
+        System.out.println("set集合" + strings);
+
+        SetOperations setOperations = redisTemplate.opsForSet();
+        setOperations.add(RedisConstant.SET_USERNAME, strings);
     }
 }

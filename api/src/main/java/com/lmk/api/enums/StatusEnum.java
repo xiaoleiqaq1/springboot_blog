@@ -12,7 +12,8 @@ public enum  StatusEnum {
     SUCCESS(200, "成功"),
     FAIL(-1, "失败"),
     ERROR_EXCEPTION(500,"全局异常信息errorException,请联系管理员"),
-    PARAMETER_EXCEPTION(300,"参数异常")
+    PARAMETER_EXCEPTION(300,"参数异常"),
+    LOGIN_EXCEPTION(520, "登录失败"),
 
     ;
 

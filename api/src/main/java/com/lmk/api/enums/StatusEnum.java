@@ -1,7 +1,5 @@
 package com.lmk.api.enums;
 
-import lombok.Data;
-
 /**
  * @auth: lmk
  * @Description:
@@ -14,6 +12,8 @@ public enum  StatusEnum {
     ERROR_EXCEPTION(500,"全局异常信息errorException,请联系管理员"),
     PARAMETER_EXCEPTION(300,"参数异常"),
     LOGIN_EXCEPTION(520, "登录失败"),
+    IMGE_EXCEPTION(530, "你上传的不是图片"),
+    IMGE_ERROR(540,"你上传图片失败了!")
 
     ;
 

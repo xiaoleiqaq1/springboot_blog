@@ -125,6 +125,19 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!--poi excel处理-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>

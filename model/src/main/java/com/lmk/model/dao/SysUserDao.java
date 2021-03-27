@@ -19,6 +19,8 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
 
     int add(SysUserEntity sysUserEntity);
 
+    SysUserEntity selectImage(@Param("id") Long id);
+
     int delete(Long id);
 
     int update(SysUserEntity sysUserEntity);

@@ -33,7 +33,10 @@ public class SysLogController {
     @Resource
     private SysLogService sysLogService;
 
-    //查询所有
+    /*
+     * @description 查询所有日志信息
+     * @author lmk
+     */
     @RequestMapping(value = "selectLog", method = RequestMethod.GET)
     public Result selectLog(@RequestParam Map<String, Object> map) {
         Result result = new Result(StatusEnum.SUCCESS);

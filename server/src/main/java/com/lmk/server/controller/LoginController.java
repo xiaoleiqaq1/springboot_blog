@@ -7,11 +7,17 @@ import com.lmk.api.enums.StatusEnum;
 import com.lmk.api.response.Result;
 import com.lmk.server.exceptions.GlobalException;
 import com.lmk.server.exceptions.LoginException;
+import com.lmk.server.service.EmailService;
 import com.lmk.server.service.LoginService;
+import com.lmk.server.utils.CodeUtil;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +29,6 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -42,8 +47,17 @@ public class LoginController {
     @Resource
     private LoginService loginService;
 
+    @Value("${spring.mail.username}")
+    private String emailUrl;
+
     @Autowired
     private Producer producer;
+
+    @Resource
+    private EmailService emailService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     //查询所有
     @RequestMapping(value = "login", method = RequestMethod.POST)
@@ -57,11 +71,10 @@ public class LoginController {
         }
 
         try {
-            boolean b = loginService.selectLoginByUsername(username, password, code);
+            //设置session
+            boolean b = loginService.selectLoginByUsername(username, password, code,request);
 
-            HttpSession session = request.getSession();
-            session.setAttribute(RedisConstant.SESSION_KEY, b);
-//            System.out.println("这是login获取的:"+session);
+
             if (b != true) {
                 result = new Result(StatusEnum.FAIL);
             }
@@ -113,7 +126,21 @@ public class LoginController {
             result = new Result(StatusEnum.FAIL);
         }
         try {
-            loginService.sendEmail(email);
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(emailUrl);
+            message.setTo(email);
+            message.setSubject("忘记密码，邮箱验证");
+            //随机验证码
+            String code = CodeUtil.getCode();
+            message.setText(code);
+            //存进redis中
+            ValueOperations valueOperations = redisTemplate.opsForValue();
+            String emailCode = RedisConstant.STRING_FRONTEMAIL + code;
+            //设置30分钟过期
+//        valueOperations.set(emailCode,code,30,TimeUnit.MINUTES);
+            valueOperations.set(emailCode,code);
+
+            emailService.sendEmail(message);
 
         } catch (Exception e) {
             logger.error("添加用户发生了异常", e);

@@ -17,6 +17,10 @@
         from sys_user
     </select>
 
+    <select id="selectImage" resultType="com.lmk.model.entity.SysUserEntity">
+        select * from  sys_user where user_id=#{id}
+    </select>
+
     <insert id="add" parameterType="SysUserEntity">
         insert into sys_user
         <trim suffixOverrides="," prefix="(" suffix=")">
@@ -93,20 +97,38 @@
     <update id="update" parameterType="SysUserEntity">
         update sys_user
         <set>
-            <if test="username!=null and username!=''">
+            <if test="name!=null and name!='' ">
+                name = #{name},
+            </if>
+            <if test="username!=null and username!='' ">
                 username=#{username},
             </if>
-            <if test="name!=null and name!=''">
-                name=#{name},
+            <if test="password!=null and password!='' ">
+                password = #{password},
             </if>
-            <if test="email!=null and email!=''">
-                email=#{email},
+            <if test="salt!=null and salt!='' ">
+                salt = #{salt},
             </if>
-            <if test="mobile!=null and mobile!=''">
-                mobile=#{mobile},
+            <if test="email!=null and email!='' ">
+                email = #{email},
+            </if>
+            <if test="mobile!=null and mobile!='' ">
+                mobile = #{mobile},
+            </if>
+            <if test="status!=null and status!='' ">
+                status = #{status},
+            </if>
+            <if test="type!=null and type!='' ">
+                type = #{type},
+            </if>
+            <if test="createTime!=null ">
+                create_time = #{createTime},
+            </if>
+            <if test="imgUrl!=null and imgUrl!=''">
+                img_url = #{imgUrl},
             </if>
         </set>
-        where user_id=#{userId}
+        where user_id = #{userId}
     </update>
 
     <select id="getById" resultType="SysUserEntity">

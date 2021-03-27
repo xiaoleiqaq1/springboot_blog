@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lmk.model.dao.BlogDao">
+
+	<select id="praiseBlogTop" resultType="com.lmk.model.entity.dto.BlogDto">
+		SELECT
+	      b.*,
+	      a.count
+        FROM
+        	blog b
+    	INNER JOIN ( SELECT blog_id, count(*) count FROM praise GROUP BY blog_id ) a ON b.id = a.blog_id
+        WHERE  b.id=#{blogId} and count>0
+        ORDER BY
+	       a.count DESC
+	</select>
+
+    <select id="checkAllBlog" resultType="com.lmk.model.entity.Blog">
+    SELECT
+  	  b.*,
+	  s.NAME nickName,
+	  s.img_url headerImg
+    FROM
+	  blog b
+	LEFT JOIN sys_user s ON b.user_id = s.user_id
+    WHERE
+	  1 = 1
+	  <if test="paramMap.searchType==2">
+	  and b.user_id=#{paramMap.userId}
+	  </if>
+    ORDER BY
+	  b.create_time DESC
+    </select>
+
+	<select id="ListAllPraiseBlog"  resultType="com.lmk.model.entity.Blog">
+	SELECT
+	  b.*,
+	  s.NAME nickName,
+	  s.img_url headerImg
+    FROM
+  	blog b
+	LEFT JOIN sys_user s ON b.user_id = s.user_id
+    WHERE
+	1 = 1
+	AND b.id IN ( SELECT blog_id FROM praise WHERE user_id = #{paramMap.userId} AND STATUS = 1 )
+    ORDER BY
+	b.create_time DESC
+	</select>
+
+</mapper>

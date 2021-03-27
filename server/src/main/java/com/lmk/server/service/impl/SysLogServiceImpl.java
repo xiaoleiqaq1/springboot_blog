@@ -12,6 +12,7 @@ import com.lmk.server.service.SysLogService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogDao, SysLogEntity> impl
 
     Logger logger = LoggerFactory.getLogger(GlobalException.class);
 
-    @Resource
+    @Autowired
     private SysLogDao sysLogDao;
 
     /*

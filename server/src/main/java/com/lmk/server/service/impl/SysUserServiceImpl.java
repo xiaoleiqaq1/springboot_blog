@@ -11,6 +11,7 @@ import com.lmk.api.utils.QueryUtil;
 import com.lmk.model.dao.SysUserDao;
 import com.lmk.model.entity.SysUserEntity;
 import com.lmk.server.exceptions.GlobalException;
+import com.lmk.server.listener.event.UserEmailEvent;
 import com.lmk.server.service.SysUserService;
 import com.lmk.server.utils.ShiroUtil;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -18,9 +19,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +46,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Value("${spring.mail.username}")
+    private String emailUrl;
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     /*
      * @description 查询所有
@@ -112,6 +122,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
             addRedisUserName2(user.getUsername());
             addRedisUserEmail2(user.getEmail());
         }
+
+        //注册成功后发送邮件
+        //方式一
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(emailUrl);
+        message.setTo(sysUserEntity.getEmail());
+        message.setSubject("注册成功通知");
+        message.setText("恭喜注册成功！");
+
+        //emailService.sendEmail(message);
+
+        //方式二：事件驱动
+        UserEmailEvent userEmailEvent = new UserEmailEvent(this, message);
+        publisher.publishEvent(userEmailEvent);
 
         return result;
     }
@@ -269,5 +293,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
         SetOperations setOperations = redisTemplate.opsForSet();
         setOperations.add(RedisConstant.SET_USERNAME, strings);
+    }
+
+    @Override
+    public SysUserEntity selectImage(Long id) {
+        return userDao.selectImage(id);
     }
 }

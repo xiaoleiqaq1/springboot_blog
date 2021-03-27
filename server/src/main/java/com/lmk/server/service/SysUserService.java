@@ -15,6 +15,7 @@ public interface SysUserService extends IService<SysUserEntity> {
 
     PageUtil findAll(Map<String, Object> map);
 //    List<SysUserEntity> findAll(Map<String,Object> map);
+    SysUserEntity selectImage(Long id);
 
     int add(SysUserEntity sysUserEntity);
 

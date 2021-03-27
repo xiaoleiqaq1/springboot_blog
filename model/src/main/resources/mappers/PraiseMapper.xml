@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lmk.model.dao.PraiseDao">
+
+    <select id="getByBlogIdAndUserId" resultType="int">
+        SELECT  count(*) FROM  praise WHERE user_id = #{userId} and blog_id =#{blogId}
+    </select>
+
+
+    <insert id="praiseBlog" parameterType="com.lmk.model.entity.Praise">
+        insert into praise
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+        <if test="blogId!=null and blogId!='' ">blog_id,</if>
+        <if test="userId!=null and userId!='' ">user_id,</if>
+        <if test="praiseTime!=null  ">praise_time,</if>
+        <if test="status!=null and  status!='' ">status,</if>
+        <if test="createTime!=null  ">create_time,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="blogId!=null and blogId!='' ">#{blogId},</if>
+        <if test="userId!=null and userId!='' ">#{userId},</if>
+        <if test="praiseTime!=null  ">#{praiseTime},</if>
+        <if test="status!=null and  status!='' ">#{status},</if>
+        <if test="createTime!=null  ">#{createTime},</if>
+        </trim>
+    </insert>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

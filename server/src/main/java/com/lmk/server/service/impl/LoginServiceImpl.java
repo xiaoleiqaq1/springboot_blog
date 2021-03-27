@@ -3,27 +3,25 @@ package com.lmk.server.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lmk.api.constants.RedisConstant;
 import com.lmk.api.enums.UserStatusEnum;
-import com.lmk.api.utils.RandomValidateCodeUtil;
 import com.lmk.model.dao.LoginDao;
 import com.lmk.model.entity.SysUserEntity;
 import com.lmk.server.exceptions.GlobalException;
 import com.lmk.server.exceptions.LoginException;
 import com.lmk.server.service.LoginService;
-import com.lmk.server.utils.CodeUtil;
 import com.lmk.server.utils.ShiroUtil;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,7 +47,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginDao, SysUserEntity> imple
     private JavaMailSender mailSender;
 
     @Override
-    public boolean selectLoginByUsername(String username, String password, String code) {
+    public boolean selectLoginByUsername(String username, String password, String code, HttpServletRequest request) {
 
         //获取redis中的值
         ValueOperations valueOperations = redisTemplate.opsForValue();
@@ -85,10 +83,19 @@ public class LoginServiceImpl extends ServiceImpl<LoginDao, SysUserEntity> imple
             throw new LoginException("您的输入的密码不正确");
         }
 
+        HttpSession session = request.getSession();
+        session.setAttribute(RedisConstant.SESSION_KEY, login);
+
+//        System.out.println("这是login获取的:"+session);
+
         return true;
     }
 
 
+    /*
+     * @description 忘记密码邮箱验证
+     * @author lmk
+     */
     @Override
     public Boolean forgetPassword(String username, String emailCode, String password) {
         //验证邮箱验证码
@@ -111,13 +118,16 @@ public class LoginServiceImpl extends ServiceImpl<LoginDao, SysUserEntity> imple
             loginDao.updatePassword(username,sysUserEntity.getPassword());
         } catch (Exception e) {
             logger.error("修改密码，系统报异常",e);
-            e.printStackTrace();
         }
 
         //将密码存进去
         return true;
     }
 
+    /*
+     * @description 添加验证码到redis中
+     * @author lmk
+     */
     @Override
     public void addRedisCode(String code) {
         //获取redis中的值
@@ -131,25 +141,25 @@ public class LoginServiceImpl extends ServiceImpl<LoginDao, SysUserEntity> imple
 
     }
 
-    @Override
-    public void sendEmail(String email) {
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom(emailUrl);//设置发件人Email
-        simpleMailMessage.setSubject("密码已经忘记，邮箱进行验证");//设置邮件主题
-        simpleMailMessage.setTo(email);//设置收件人email
-
-        String code = CodeUtil.getCode();
-
-        simpleMailMessage.setText(code);
-
-        //存进redis中
-        ValueOperations valueOperations = redisTemplate.opsForValue();
-        String emailCode = RedisConstant.STRING_FRONTEMAIL + code;
-        //设置30分钟过期
-//        valueOperations.set(emailCode,code,30,TimeUnit.MINUTES);
-        valueOperations.set(emailCode,code);
-
-        mailSender.send(simpleMailMessage);//设置邮件主题内容
-
-    }
+//    @Override
+//    public void sendEmail(String email) {
+//        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+//        simpleMailMessage.setFrom(emailUrl);//设置发件人Email
+//        simpleMailMessage.setSubject("密码已经忘记，邮箱进行验证");//设置邮件主题
+//        simpleMailMessage.setTo(email);//设置收件人email
+//
+//        String code = CodeUtil.getCode();
+//
+//        simpleMailMessage.setText(code);
+//
+//        //存进redis中
+//        ValueOperations valueOperations = redisTemplate.opsForValue();
+//        String emailCode = RedisConstant.STRING_FRONTEMAIL + code;
+//        //设置30分钟过期
+////        valueOperations.set(emailCode,code,30,TimeUnit.MINUTES);
+//        valueOperations.set(emailCode,code);
+//
+//        mailSender.send(simpleMailMessage);//设置邮件主题内容
+//
+//    }
 }

@@ -27,7 +27,7 @@ public class RedisSchedule {
     //时间配置到凌晨2点执行
 
     //    在子表达式（分钟）里的“0/15”表示从第0分钟开始，每15分钟
-    @Scheduled(cron = "* 30/50 * * * ?")
+    @Scheduled(cron = "* 30 * * * ?")
     public void usernameTask() {
         logger.info("清除redis中账号任务开始：" + new Date());
         sysUserService.checkRedisUserName();

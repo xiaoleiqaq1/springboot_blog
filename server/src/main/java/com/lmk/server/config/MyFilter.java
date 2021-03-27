@@ -11,7 +11,7 @@ import java.io.IOException;
 
 /**
  * @auth: lmk
- * @Description:
+ * @Description: 过滤器
  * @date: 2021/3/23
  */
 @WebFilter("/*")
@@ -39,7 +39,7 @@ public class MyFilter implements Filter {
         String uri = request.getRequestURI();
         HttpSession session = request.getSession();
 //        System.out.println("这是过滤器获取的:"+session);
-        if (!(uri.endsWith("login") || uri.endsWith("email") || uri.endsWith("getCode") || uri.endsWith("forget"))) {
+        if (!(uri.endsWith("login") || uri.endsWith("email") || uri.endsWith("getCode") || uri.endsWith("forget") )) {
             if (session == null) {
                 throw new RuntimeException("非法登录");
             }

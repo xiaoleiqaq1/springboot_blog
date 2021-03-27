@@ -16,4 +16,6 @@ public class RedisConstant {
 
     //存进session中的key
     public static final String SESSION_KEY="session_key";
+
+    public static final String ZSET_PRAISE = "zset:praise:";
 }

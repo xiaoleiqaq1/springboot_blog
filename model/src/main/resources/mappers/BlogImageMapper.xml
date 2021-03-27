@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lmk.model.dao.BlogImageDao">
+
+    <select id="checkBlogImage" resultType="com.lmk.model.entity.BlogImage">
+        select * from blog_image where blog_id=#{id}
+    </select>
+
+    <insert id="addBlogImage" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+        insert into blog_image
+        (name,size,suffix,file_url,is_active,create_time)
+        values
+        <foreach collection="list" item="BlogImage" separator=",">
+            <trim suffixOverrides="," prefix="(" suffix=")">
+                <if test="BlogImage.name!=null and BlogImage.name!=''">
+                #{BlogImage.name},
+                </if>
+                <if test="BlogImage.size!=null and BlogImage.size!=''">
+                #{BlogImage.size},
+                </if>
+                <if test="BlogImage.suffix!=null and BlogImage.suffix!=''">
+                #{BlogImage.suffix},
+                </if>
+                <if test="BlogImage.fileUrl!=null and BlogImage.fileUrl!=''">
+                #{BlogImage.fileUrl},
+                </if>
+                <if test="BlogImage.isActive!=null and BlogImage.isActive!=''">
+                #{BlogImage.isActive},
+                </if>
+                <if test="BlogImage.createTime!=null">#{BlogImage.createTime},</if>
+            </trim>
+        </foreach>
+
+    </insert>
+
+</mapper>
